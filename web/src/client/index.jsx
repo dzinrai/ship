@@ -1,49 +1,45 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { createBrowserHistory } from 'history';
 import { ConnectedRouter } from 'connected-react-router';
+import App from 'app';
 
-import routes from './routes';
-import configureStore from './resources/store';
+import store from 'resources/store';
+import history from 'resources/browserHistory';
+import { getCurrent } from 'resources/user/user.api';
 
 import styles from './styles.pcss';
-import Layout from './components/layout';
 
 const minLoadingTime = 1500;
 const now = Date.now();
 
-const initialState = {
-  user: window.user,
-  toast: {
-    messages: [],
-  },
-};
-
-const history = createBrowserHistory();
-const store = configureStore(initialState, history);
-
 const Root = () => (
   <Provider store={store}>
     <ConnectedRouter history={history}>
-      <Layout>
-        {routes()}
-      </Layout>
+      <App />
     </ConnectedRouter>
   </Provider>
 );
 
-const renderApp = () => {
+async function renderApp() {
   const rootEl = document.getElementById('root');
+
   if (!(rootEl instanceof Element)) {
     throw new Error('invalid type');
   }
+
+  const { data: user } = await getCurrent();
+
+  window.user = user;
+
+  // we need to init application only after user has been loaded
+  require('resources/user/user.socket-handler'); // eslint-disable-line global-require
 
   ReactDOM.render(
     <Root />,
     rootEl,
   );
-};
+}
 
 const hidePoster = () => {
   const poster = document.getElementById('poster');

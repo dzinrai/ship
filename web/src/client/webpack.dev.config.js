@@ -1,5 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
+const config = require('config');
+const constants = require('../server/constants');
 
 module.exports = {
   mode: 'development',
@@ -58,5 +60,17 @@ module.exports = {
     },
   },
 
-  plugins: [new webpack.NoEmitOnErrorsPlugin()],
+  plugins: [
+    new webpack.NoEmitOnErrorsPlugin(),
+    new webpack.DefinePlugin({
+      APP_CONFIG: {
+        apiUrl: JSON.stringify(config.apiUrl),
+        webSocketUrl: JSON.stringify(config.webSocketUrl),
+        landingLoginUrl: JSON.stringify(config.landingLoginUrl),
+      },
+      APP_CONSTANTS: {
+        ACCESS_TOKEN_COOKIE_NAME: JSON.stringify(constants.ACCESS_TOKEN_COOKIE_NAME),
+      },
+    }),
+  ],
 };

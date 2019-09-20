@@ -2,16 +2,17 @@ const _ = require('lodash');
 const path = require('path');
 const fs = require('fs');
 
-const env = process.env.NODE_ENV || 'development';
+const env = process.env.APP_ENV || 'development';
 
 let base = {
   env,
   port: process.env.PORT || 3000,
   isDev: env === 'development',
   isTest: env === 'test',
+  gaTrackingId: 'gaTrackingId',
 };
 
-const envConfig = require(`./${env}.js`); // eslint-disable-line
+const envConfig = require(`./${env}.json`); // eslint-disable-line
 
 base = _.merge(base, envConfig || {});
 

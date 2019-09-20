@@ -2,36 +2,19 @@ const _ = require('lodash');
 const path = require('path');
 const fs = require('fs');
 
-const env = process.env.NODE_ENV || 'development';
+const env = process.env.APP_ENV || 'development';
 
 let base = {
   env,
   port: process.env.PORT || 3001,
   isDev: env === 'development',
   isTest: env === 'test',
-  landingUrl: 'http://localhost:3000',
-  webUrl: 'http://localhost:3002',
-  apiUrl: 'http://localhost:3001',
-  jwt: {
-    secret: 'jwt_secret',
-    audience: 'api',
-    issuer: 'api',
-  },
-  mongo: {
-    connection: 'mongodb://root:rootPassword@localhost:27017/api?authSource=admin',
-  },
-  mailgun: {
-    apiKey: 'apiKey',
-    domain: 'domain',
-  },
-  google: {
-    clientId: 'clientId',
-    clientSecret: 'clientSecret',
-    redirectUri: 'redirectUri',
-  },
+  accessTokenExpiresIn: 3600 * 1000, // 1 hour
+  refreshTokenExpiresIn: 3600 * 1000 * 10, // 10 hours
+  sessionTimeInMinutes: 30,
 };
 
-const envConfig = require(`./${env}.js`); // eslint-disable-line
+const envConfig = require(`./${env}.json`); // eslint-disable-line
 
 base = _.merge(base, envConfig || {});
 
