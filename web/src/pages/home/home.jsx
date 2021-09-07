@@ -1,4 +1,7 @@
+import Button from 'components/button';
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { userActions } from 'resources/user/user.slice';
 
 import styles from './home.styles.pcss';
 
@@ -30,10 +33,15 @@ const meetings = [
 ];
 
 function Home() {
+  const dispatch = useDispatch();
+
+  async function test() {
+    await dispatch(userActions.test({ email: 'NEWSS' }));
+  }
   return (
     <>
       <h1 className={styles.title}>Meetings</h1>
-
+      <Button onClick={test}>KEK</Button>
       <div>
         {meetings.map((meeting) => (
           <div

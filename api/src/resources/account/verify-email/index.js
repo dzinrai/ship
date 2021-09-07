@@ -15,7 +15,9 @@ const schema = Joi.object({
 });
 
 async function validator(ctx, next) {
-  const user = await userService.findOne({ signupToken: ctx.validatedData.token });
+  const service = await userService;
+
+  const user = await service.findOne({ signupToken: ctx.validatedData.token });
 
   if (!user) {
     ctx.body = {
@@ -33,13 +35,14 @@ async function validator(ctx, next) {
 
 async function handler(ctx) {
   const { userId } = ctx.validatedData;
+  const service = await userService;
 
   await Promise.all([
-    userService.updateOne(
+    service.updateOne(
       { _id: userId },
       (old) => ({ ...old, isEmailVerified: true, signupToken: null }),
     ),
-    userService.updateLastRequest(userId),
+    service.updateLastRequest(userId),
     authService.setTokens(ctx, userId),
   ]);
 

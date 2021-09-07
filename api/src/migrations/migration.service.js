@@ -3,52 +3,57 @@ const fs = require('fs');
 const path = require('path');
 const validateSchema = require('./migration.schema');
 
-const service = db.createService('__migrationVersion', { validate: validateSchema });
 const migrationsPath = path.join(__dirname, 'migrations');
 const _id = 'migration_version';
 
-const getMigrationNames = () => new Promise((resolve, reject) => {
-  fs.readdir(migrationsPath, (err, files) => {
-    if (err) {
-      reject(err);
-      return;
-    }
-    resolve(files);
-  });
-});
+function createService(dbInstance) {
+  const newService = dbInstance.createService('__migrationVersion', { validate: validateSchema });
 
-service.getCurrentMigrationVersion = () => service.findOne({ _id })
-  .then((doc) => {
-    if (!doc) {
-      return 0;
-    }
-
-    return doc.version;
+  const getMigrationNames = () => new Promise((resolve, reject) => {
+    fs.readdir(migrationsPath, (err, files) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(files);
+    });
   });
 
-service.getMigrations = () => {
-  let migrations = null;
+  newService.getCurrentMigrationVersion = () => newService.findOne({ _id })
+    .then((doc) => {
+      if (!doc) {
+        return 0;
+      }
 
-  return getMigrationNames().then((names) => {
-    migrations = names.map((name) => {
-      const migrationPath = path.join(migrationsPath, name);
-      // eslint-disable-next-line import/no-dynamic-require, global-require
-      return require(migrationPath);
+      return doc.version;
     });
 
-    return migrations;
-  }).catch((err) => {
-    throw err;
-  });
-};
+  newService.getMigrations = () => {
+    let migrations = null;
 
-service.setNewMigrationVersion = (version) => service.atomic.findOneAndUpdate({ _id }, {
-  $set: {
-    version,
-  },
-  $setOnInsert: {
-    _id,
-  },
-}, { upsert: true });
+    return getMigrationNames().then((names) => {
+      migrations = names.map((name) => {
+        const migrationPath = path.join(migrationsPath, name);
+        // eslint-disable-next-line import/no-dynamic-require, global-require
+        return require(migrationPath);
+      });
+
+      return migrations;
+    }).catch((err) => {
+      throw err;
+    });
+  };
+
+  newService.setNewMigrationVersion = (version) => newService.atomic.findOneAndUpdate({ _id }, {
+    $set: {
+      version,
+    },
+    $setOnInsert: {
+      _id,
+    },
+  }, { upsert: true });
+}
+
+const service = db(createService);
 
 module.exports = service;

@@ -1,6 +1,6 @@
 const Router = require('@koa/router');
 
-require('./user.handler');
+// require('./user.handler');
 
 const router = new Router();
 

@@ -68,6 +68,10 @@ const updateCurrentUser = (data) => async (dispatch) => {
   dispatch(setUser({ user }));
 };
 
+const test = ({ email }) => async () => {
+  await api.testEndpoint({ email });
+};
+
 export const userActions = {
   setUser,
   removeUser,
@@ -78,6 +82,7 @@ export const userActions = {
   signOut,
   getCurrentUser,
   updateCurrentUser,
+  test,
 };
 
 export default userSlice.reducer;

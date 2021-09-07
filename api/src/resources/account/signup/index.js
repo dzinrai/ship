@@ -47,8 +47,8 @@ const schema = Joi.object({
 
 async function validator(ctx, next) {
   const { email } = ctx.validatedData;
-
-  const isUserExists = await userService.exists({ email });
+  const service = await userService;
+  const isUserExists = await service.exists({ email });
 
   if (isUserExists) {
     ctx.body = {
@@ -64,13 +64,14 @@ async function validator(ctx, next) {
 
 async function handler(ctx) {
   const data = ctx.validatedData;
+  const service = await userService;
 
   const [hash, signupToken] = await Promise.all([
     securityUtil.getHash(data.password),
     securityUtil.generateSecureToken(),
   ]);
 
-  const user = await userService.create({
+  const user = await service.create({
     firstName: data.firstName,
     lastName: data.lastName,
     email: data.email,

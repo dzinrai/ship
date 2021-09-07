@@ -31,8 +31,8 @@ const schema = Joi.object({
 
 async function validator(ctx, next) {
   const { email, password } = ctx.validatedData;
-
-  const user = await userService.findOne({ email });
+  const service = await userService;
+  const user = await service.findOne({ email });
   if (!user) {
     ctx.body = {
       errors: {
@@ -69,13 +69,14 @@ async function validator(ctx, next) {
 
 async function handler(ctx) {
   const { user } = ctx.validatedData;
+  const service = await userService;
 
   await Promise.all([
-    userService.updateLastRequest(user._id),
+    service.updateLastRequest(user._id),
     authService.setTokens(ctx, user._id),
   ]);
 
-  ctx.body = userService.getPublic(user);
+  ctx.body = service.getPublic(user);
 }
 
 module.exports.register = (router) => {

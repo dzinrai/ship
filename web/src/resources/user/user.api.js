@@ -43,3 +43,7 @@ export const getCurrentUser = () => {
 export const updateCurrentUser = (data) => {
   return api.put('/users/current', data);
 };
+
+export const testEndpoint = (data) => {
+  return api.post('/testReq/test', data);
+};

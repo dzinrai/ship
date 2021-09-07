@@ -26,8 +26,9 @@ const schema = Joi.object({
 
 async function handler(ctx) {
   const { token, password } = ctx.validatedData;
+  const service = await userService;
 
-  const user = await userService.findOne({ resetPasswordToken: token });
+  const user = await service.findOne({ resetPasswordToken: token });
   if (!user) {
     ctx.body = {
       errors: {
@@ -38,7 +39,7 @@ async function handler(ctx) {
   }
 
   const passwordHash = await securityUtil.getHash(password);
-  await userService.updateOne(
+  await service.updateOne(
     { _id: user._id },
     (old) => ({ ...old, passwordHash, resetPasswordToken: null }),
   );

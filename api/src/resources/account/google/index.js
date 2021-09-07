@@ -4,7 +4,9 @@ const googleService = require('services/google.service.js');
 const authService = require('services/auth.service');
 
 const createUserAccount = async (userData) => {
-  const user = await userService.create({
+  const service = await userService;
+
+  const user = await service.create({
     firstName: userData.given_name,
     lastName: userData.family_name,
     email: userData.email,
@@ -22,11 +24,12 @@ const getOAuthUrl = async (ctx) => {
 };
 
 const ensureAccountCreated = async (payload) => {
-  const user = await userService.findOne({ email: payload.email });
+  const service = await userService;
+  const user = await service.findOne({ email: payload.email });
 
   if (user) {
     if (!user.oauth.google) {
-      const userChanged = await userService.updateOne(
+      const userChanged = await service.updateOne(
         { _id: user._id },
         (old) => ({ ...old, oauth: { google: true } }),
       );
@@ -42,6 +45,7 @@ const ensureAccountCreated = async (payload) => {
 
 const signinGoogleWithCode = async (ctx) => {
   const { code } = ctx.request.query;
+  const service = await userService;
   const { isValid, payload } = await googleService.exchangeCodeForToken(code);
 
   ctx.assert(isValid, 404);
@@ -49,7 +53,7 @@ const signinGoogleWithCode = async (ctx) => {
   const { _id: userId } = await ensureAccountCreated(payload);
 
   await Promise.all([
-    userService.updateLastRequest(userId),
+    service.updateLastRequest(userId),
     authService.setTokens(ctx, userId),
   ]);
   ctx.redirect(config.webUrl);

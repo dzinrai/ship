@@ -5,25 +5,33 @@ const constants = require('app.constants');
 
 const validateSchema = require('./user.schema');
 
-const service = db.createService(constants.DATABASE_DOCUMENTS.USERS, { validate: validateSchema });
-
-service.updateLastRequest = async (_id) => {
-  return service.atomic.update({ _id }, {
-    $set: {
-      lastRequest: new Date(),
-      updatedOn: new Date(),
-    },
-  });
-};
-
 const privateFields = [
   'passwordHash',
   'signupToken',
   'resetPasswordToken',
 ];
 
-service.getPublic = (user) => {
-  return _.omit(user, privateFields);
-};
+async function createService(dbInstance) {
+  const newService = await dbInstance.createService(
+    constants.DATABASE_DOCUMENTS.USERS, { validate: validateSchema },
+  );
+
+  newService.updateLastRequest = async (_id) => {
+    return newService.atomic.update({ _id }, {
+      $set: {
+        lastRequest: new Date(),
+        updatedOn: new Date(),
+      },
+    });
+  };
+
+  newService.getPublic = (user) => {
+    return _.omit(user, privateFields);
+  };
+
+  return newService;
+}
+
+const service = db(createService);
 
 module.exports = service;

@@ -27,7 +27,9 @@ const getCookie = (cookieString, name) => {
 
 io.use(async (socket, next) => {
   const accessToken = getCookie(socket.handshake.headers.cookie, COOKIES.ACCESS_TOKEN);
-  const userData = await tokenService.getUserDataByToken(accessToken);
+  const service = await tokenService;
+
+  const userData = await service.getUserDataByToken(accessToken);
 
   if (userData) {
     // eslint-disable-next-line no-param-reassign

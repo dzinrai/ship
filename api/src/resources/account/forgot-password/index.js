@@ -19,7 +19,8 @@ const schema = Joi.object({
 });
 
 async function handler(ctx) {
-  const user = await userService.findOne({ email: ctx.validatedData.email });
+  const service = await userService;
+  const user = await service.findOne({ email: ctx.validatedData.email });
 
   if (user) {
     let { resetPasswordToken } = user;

@@ -19,7 +19,9 @@ const schema = Joi.object({
 
 async function handler(ctx) {
   const { email } = ctx.validatedData;
-  const user = await userService.findOne({ email });
+  const service = await userService;
+
+  const user = await service.findOne({ email });
 
   if (user) {
     await emailService.sendSignupWelcome({
