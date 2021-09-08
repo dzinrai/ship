@@ -31,7 +31,7 @@ const schema = Joi.object({
 
 async function validator(ctx, next) {
   const { email, password } = ctx.validatedData;
-
+  console.log('userService', userService);
   const user = await userService.findOne({ email });
   if (!user) {
     ctx.body = {

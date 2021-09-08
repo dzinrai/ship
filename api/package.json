@@ -42,7 +42,7 @@
     "@koa/router": "10.0.0",
     "@paralect/common-logger": "0.1.10",
     "@paralect/email-service": "0.3.0",
-    "@paralect/node-mongo": "2.1.1",
+    "@paralect/node-mongo": "file:./node-mongo",
     "app-module-path": "2.2.0",
     "aws-sdk": "2.976.0",
     "bcrypt": "5.0.1",

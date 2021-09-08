@@ -47,17 +47,19 @@ const schema = Joi.object({
 
 async function validator(ctx, next) {
   const { email } = ctx.validatedData;
-
-  const isUserExists = await userService.exists({ email });
-
-  if (isUserExists) {
-    ctx.body = {
-      errors: {
-        email: ['User with this email is already registered'],
-      },
-    };
-    ctx.throw(400);
-  }
+  console.log(123123123213);
+  console.log('userService', userService);
+  // const isUserExists = await userService.exists({ email });
+  // console.log('isUserExists', isUserExists);
+  console.log();
+  // if (isUserExists) {
+  //   ctx.body = {
+  //     errors: {
+  //       email: ['User with this email is already registered'],
+  //     },
+  //   };
+  //   ctx.throw(400);
+  // }
 
   await next();
 }
@@ -81,6 +83,7 @@ async function handler(ctx) {
       google: false,
     },
   });
+  console.log('user', user);
 
   await emailService.sendSignupWelcome({
     email: user.email,
